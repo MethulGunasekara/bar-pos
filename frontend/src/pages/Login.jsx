@@ -1,67 +1,89 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GlassWater, LogIn, TriangleAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import './Login.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    
-    // 1. Grab our navigation tool and our global login function
+    const [submitting, setSubmitting] = useState(false);
+
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear any old errors
+        setError('');
+        setSubmitting(true);
 
-        // 1. Pass the credentials to our AuthContext
         const result = await login(username, password);
 
         if (result.success) {
-            // 2. Grab the user data that was just saved to local storage
             const loggedInUser = JSON.parse(localStorage.getItem('pos_user'));
-
-            // 3. Check their role and route them accordingly!
             if (loggedInUser.role === 'admin') {
-                navigate('/admin'); // Managers go to the back office
+                navigate('/admin');
             } else {
-                navigate('/pos');   // Cashiers go to the terminal
+                navigate('/pos');
             }
         } else {
-            // 4. If the backend says "invalid credentials", show the error
             setError(result.message);
+            setSubmitting(false);
         }
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10vh' }}>
-            <h1>Local Bar POS</h1>
-            
-            {/* Display error messages if login fails */}
-            {error && <div style={{ backgroundColor: '#ffebee', color: 'red', padding: '10px', borderRadius: '5px', marginBottom: '10px', width: '300px', textAlign: 'center', border: '1px solid red' }}>{error}</div>}
-            
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '300px' }}>
-                <input 
-                    type="text" 
-                    placeholder="Username" 
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    style={{ padding: '10px', fontSize: '1.2rem' }}
-                    required
-                />
-                <input 
-                    type="password" 
-                    placeholder="Password (PIN)" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={{ padding: '10px', fontSize: '1.2rem' }}
-                    required
-                />
-                <button type="submit" style={{ padding: '10px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px' }}>
-                    Login
-                </button>
-            </form>
+        <div className="login-screen">
+            <div className="login-card">
+                <div className="login-brand">
+                    <span className="login-brand-icon">
+                        <GlassWater size={22} strokeWidth={2.25} />
+                    </span>
+                    <span className="login-brand-name">BarTab</span>
+                </div>
+
+                <h1 className="login-title">Welcome back</h1>
+                <p className="login-subtitle">Sign in to open the till</p>
+
+                {error && (
+                    <div className="login-error">
+                        <TriangleAlert size={16} />
+                        <span>{error}</span>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="login-form">
+                    <div>
+                        <label className="field-label" htmlFor="username">Username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            className="input"
+                            placeholder="e.g. mia"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            autoFocus
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="field-label" htmlFor="password">PIN</label>
+                        <input
+                            id="password"
+                            type="password"
+                            className="input"
+                            placeholder="••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="btn btn-primary login-submit" disabled={submitting}>
+                        {submitting ? 'Signing in…' : (<><LogIn size={17} /> Sign in</>)}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

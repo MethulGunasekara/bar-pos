@@ -41,10 +41,23 @@ export const CartProvider = ({ children }) => {
         setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
     };
 
+    // Drops quantity by 1; removes the line entirely once it hits 0
+    const decreaseFromCart = (productId) => {
+        setCart((prevCart) =>
+            prevCart
+                .map((item) =>
+                    item.productId === productId
+                        ? { ...item, quantity: item.quantity - 1 }
+                        : item
+                )
+                .filter((item) => item.quantity > 0)
+        );
+    };
+
     const clearCart = () => setCart([]);
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, clearCart, removeFromCart }}>
+        <CartContext.Provider value={{ cart, addToCart, clearCart, removeFromCart, decreaseFromCart }}>
             {children}
         </CartContext.Provider>
     );
