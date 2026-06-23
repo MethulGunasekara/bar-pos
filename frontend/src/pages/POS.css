@@ -82,29 +82,83 @@
 }
 
 .product-card {
+  position: relative;
   height: 104px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: var(--surface);
+  background-color: var(--surface);
   box-shadow: var(--shadow-xs);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 14px;
+  overflow: hidden;
   cursor: pointer;
   text-align: left;
+  padding: 0;
   transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 }
 
 .product-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: var(--citrus);
 }
 
 .product-card:active {
   transform: scale(0.96);
+}
+
+.product-card.no-image:hover {
+  border-color: var(--citrus);
+}
+
+.product-card.has-image {
+  background-size: cover;
+  background-position: center;
+  border-color: transparent;
+}
+
+/* Frosts the photo across the entire card so the cashier reads color and
+   shape, not a sharp product photo — the whole card reads as one glossy
+   surface instead of an image section sitting on top of a plain label.
+   The scattered dots + thin streaks evoke condensation on a cold glass
+   fridge door; hovering "wipes" it slightly clearer, like leaning in. */
+.product-card.has-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4) 45%, transparent 75%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.35) 45%, transparent 75%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.35) 45%, transparent 75%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.3) 45%, transparent 75%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.3) 45%, transparent 75%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.25) 45%, transparent 75%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 80%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 85%);
+  background-repeat: no-repeat;
+  background-size:
+    7px 7px, 5px 5px, 8px 8px, 4px 4px, 6px 6px, 4px 4px,
+    3px 26px, 2px 18px;
+  background-position:
+    16% 20%, 32% 38%, 70% 16%, 86% 34%, 54% 10%, 12% 52%,
+    16% 24%, 70% 20%;
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(2.5px) saturate(180%);
+  transition: background-color 0.18s ease, backdrop-filter 0.18s ease;
+}
+
+.product-card.has-image:hover::before {
+  background-color: rgba(255, 255, 255, 0.46);
+  backdrop-filter: blur(1px) saturate(220%);
+  -webkit-backdrop-filter: blur(0.5px) saturate(170%);
+}
+
+.product-card-label {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
 }
 
 .product-name {
